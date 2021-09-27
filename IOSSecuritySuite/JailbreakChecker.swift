@@ -116,11 +116,7 @@ internal class JailbreakChecker {
 
         if Thread.isMainThread {
             flag = canOpenUrlFromList(urlSchemes: urlSchemes)
-        } else {
-            DispatchQueue.main.sync {
-                flag = canOpenUrlFromList(urlSchemes: urlSchemes)
-            }
-        }
+        } 
         return flag
     }
 
