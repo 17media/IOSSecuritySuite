@@ -24,6 +24,8 @@ public enum JailbreakCheck: CaseIterable {
     case dyld
 }
 
+private let lock = NSLock()
+
 internal class JailbreakChecker {
     typealias CheckResult = (passed: Bool, failMessage: String)
 
@@ -319,7 +321,11 @@ internal class JailbreakChecker {
             "Cephei",
             "Electra",
         ]
-
+        lock.lock()
+        defer {
+            lock.unlock()
+        }
+        
         for libraryIndex in 0..<_dyld_image_count() {
 
             // _dyld_get_image_name returns const char * that needs to be casted to Swift String
