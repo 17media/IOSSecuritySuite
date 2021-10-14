@@ -24,7 +24,6 @@ public enum JailbreakCheck: CaseIterable {
     case dyld
 }
 
-private let lock = NSLock()
 
 internal class JailbreakChecker {
     typealias CheckResult = (passed: Bool, failMessage: String)
@@ -298,46 +297,6 @@ internal class JailbreakChecker {
     }
 
     private static func checkDYLD() -> CheckResult {
-
-        let suspiciousLibraries = [
-            "SubstrateLoader.dylib",
-            "SSLKillSwitch2.dylib",
-            "SSLKillSwitch.dylib",
-            "MobileSubstrate.dylib",
-            "TweakInject.dylib",
-            "CydiaSubstrate",
-            "cynject",
-            "CustomWidgetIcons",
-            "PreferenceLoader",
-            "RocketBootstrap",
-            "WeeLoader",
-            "/.file", // HideJB (2.1.1) changes full paths of the suspicious libraries to "/.file"
-            "libhooker",
-            "SubstrateInserter",
-            "SubstrateBootstrap",
-            "ABypass",
-            "FlyJB",
-            "Substitute",
-            "Cephei",
-            "Electra",
-        ]
-        lock.lock()
-        defer {
-            lock.unlock()
-        }
-        
-        for libraryIndex in 0..<_dyld_image_count() {
-
-            // _dyld_get_image_name returns const char * that needs to be casted to Swift String
-            guard let loadedLibrary = String(validatingUTF8: _dyld_get_image_name(libraryIndex)) else { continue }
-
-            for suspiciousLibrary in suspiciousLibraries {
-                if loadedLibrary.lowercased().contains(suspiciousLibrary.lowercased()) {
-                    return(false, "Suspicious library loaded: \(loadedLibrary)")
-                }
-            }
-        }
-
         return (true, "")
     }
 }
